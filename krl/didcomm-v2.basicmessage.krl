@@ -5,6 +5,7 @@ ruleset didcomm-v2.basicmessage {
       Implements the basicmessage protocol
       https://didcomm.org/basicmessage/2.0/
     >>
+    use module io.picolabs.wrangler alias wrangler
     use module io.picolabs.did-o alias dcv2
   }
   global {
