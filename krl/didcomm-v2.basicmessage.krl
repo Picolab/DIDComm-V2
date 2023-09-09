@@ -8,6 +8,7 @@ ruleset didcomm-v2.basicmessage {
     use module io.picolabs.did-o alias dcv2
   }
   global {
+    bmTags = ["didcomm-v2","basicmessage"] // meta:rid.split(".")
     generate_basicmessage = function(their_did,message_text,thid){
       dido:generateMessage({
         "type": "https://didcomm.org/basicmessage/2.0/message",
@@ -26,11 +27,25 @@ ruleset didcomm-v2.basicmessage {
       route0 = dcv2:addRoute("https://didcomm.org/basicmessage/2.0/message",
                  "didcomm_v2_basicmessage", "message_received")
     }
+    wrangler:createChannel(
+      bmTags,
+      {"allow":[{"domain":"didcomm_v2_basicmessage","name":"*"}],"deny":[]},
+      {"allow":[{"rid":meta:rid,"name":"*"}],"deny":[]}
+    )
+    fired {
+      raise didcomm_v2_basicmessage event "factory_reset"
+    }
+  }
+  rule keepChannelsClean {
+    select when didcomm_v2_basicmessage factory_reset
+    foreach wrangler:channels(bmTags).reverse().tail() setting(chan)
+    wrangler:deleteChannel(chan.get("id"))
   }
   rule incomingMessge {
     select when didcomm_v2_basicmessage message_received
     pre {
       message = event:attrs{"message"}
+.klog("message")
     }
   }
   rule outgoingMessage {
