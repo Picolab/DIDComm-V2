@@ -9,7 +9,7 @@ ruleset didcomm-v2.basicmessage {
   }
   global {
     generate_basicmessage = function(their_did,message_text,thid){
-      dcv2:generate_message({
+      dido:generateMessage({
         "type": "https://didcomm.org/basicmessage/2.0/message",
         "from": dcv2:didMap(){their_did},
         "to": [their_did],
