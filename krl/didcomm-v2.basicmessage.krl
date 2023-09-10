@@ -46,7 +46,6 @@ ruleset didcomm-v2.basicmessage {
     select when didcomm_v2_basicmessage message_received
     pre {
       message = event:attrs{"message"}
-.klog("message")
     }
   }
   rule outgoingMessage {
