@@ -43,6 +43,18 @@ ruleset didcomm-v2.out-of-band {
 <!-- thanks to Jerome Etienne http://jeromeetienne.github.io/jquery-qrcode/ -->
 <script type="text/javascript" src="https://manifold.picolabs.io:9090/js/jquery.qrcode.js"></script>
 <script type="text/javascript" src="https://manifold.picolabs.io:9090/js/qrcode.js"></script>
+<script type="text/javascript">
+  function selectAll(e){
+    e.preventDefault();
+    const range = document.createRange();
+    range.selectNodeContents(e.target);
+    const sel = window.getSelection();
+    if(sel){
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+</script>
 <style type="text/css">
 h1, h2, p, dt, dd, form {
   font-family: Arial, sanserif;
@@ -74,7 +86,7 @@ Message format:
 <input type="hidden" name="tag" value="#{label}">
 </form>
 <p>To respond with a DIDComm v2 agent, copy/paste this URI:</p>
-<textarea id="the_invite" onclick="selectAll(event)" title="click to select all">#{the_invite()}</textarea>
+<textarea id="the_invite" onclick="selectAll(event)" title="click to select all" readonly>#{the_invite()}</textarea>
 <p>To respond with a DIDComm v2 wallet, scan this QR Code:</p>
 <div style="border:1px dashed silver;padding:5px;width:max-content"></div>
 <h2>Technical details (part one)</h2>
@@ -93,16 +105,6 @@ Message format:
 $(function(){
   to_show = $("#the_invite").val();
   $("div").qrcode({ text: to_show, foreground: "#000000" });
-  function selectAll(e){
-    e.preventDefault();
-    const range = document.createRange();
-    range.selectNodeContents(e.target);
-    const sel = window.getSelection();
-    if(sel){
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  }
 });
 </script>
   </body>
