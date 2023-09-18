@@ -74,7 +74,7 @@ Message format:
 <input type="hidden" name="tag" value="#{label}">
 </form>
 <p>To respond with a DIDComm v2 agent, copy/paste this URI:</p>
-<textarea id="the_invite">#{the_invite()}</textarea>
+<textarea id="the_invite" onclick="selectAll(event)" title="click to select all">#{the_invite()}</textarea>
 <p>To respond with a DIDComm v2 wallet, scan this QR Code:</p>
 <div style="border:1px dashed silver;padding:5px;width:max-content"></div>
 <h2>Technical details (part one)</h2>
@@ -93,6 +93,16 @@ Message format:
 $(function(){
   to_show = $("#the_invite").val();
   $("div").qrcode({ text: to_show, foreground: "#000000" });
+  function selectAll(e){
+    e.preventDefault();
+    const range = document.createRange();
+    range.selectNodeContents(e.target);
+    const sel = window.getSelection();
+    if(sel){
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
 });
 </script>
   </body>
