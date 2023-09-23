@@ -3,9 +3,12 @@ ruleset didcomm-v2.out-of-band {
     use module io.picolabs.wrangler alias wrangler
     use module io.picolabs.did-o alias dcv2
     provides generate_invitation
-    shares generate_invitation, invite
+    shares generate_invitation, invite, raw_shortcuts
   }
   global {
+    raw_shortcuts = function(){
+      ent:shortcuts
+    }
     shortcut_url = function(){
       ed = "didcomm_v2_out_of_band"
       et = "shortcut_need_changed"
