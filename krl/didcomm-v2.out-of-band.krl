@@ -184,7 +184,11 @@ $(function(){
   rule redirectFromShortcut {
     select when s u
     pre {
-      _oob = ent:shortcuts{meta:eci}
+      mre = ("/sky/event/"+meta:eci+"/").as("RegExp")
+      _oob = ent:shortcuts
+        .filter(function(s,o){s.match(mre)})
+        .keys()
+        .head()
     }
     send_directive("_redirect",{"url":invite_url(["_oob="+_oob])})
   }
