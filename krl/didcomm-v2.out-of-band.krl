@@ -8,6 +8,12 @@ ruleset didcomm-v2.out-of-band {
   global {
     connections = function(){
       ent:connections
+        .map(function(c){
+          _oob = c.get("_oob")
+          json = _oob => _oob.math:base64decode().decode() | null
+          from = json => json.get("from") | null
+          from => c.put("my_did",from).delete("_oob") | c
+        })
     }
     raw_shortcuts = function(){
       ent:shortcuts
@@ -156,9 +162,11 @@ $(function(){
     pre {
       parts = dcv2:generate_invitation(label).split("/invite?")
       the_invite = invite_url(parts.tail()) // ["_oob=eyJ..."]
+      _oob = parts.tail().head().split("=").tail().join("=")
+      json = _oob.math:base64decode().decode()
       the_connection_so_far = {
         "label": label,
-        "_oob": parts.tail().head().split("=").tail().join("=")
+        "my_did": json.get("from")
       }
     }
     send_directive("_redirect",{"url":the_invite})
