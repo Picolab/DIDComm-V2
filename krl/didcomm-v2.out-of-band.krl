@@ -3,7 +3,7 @@ ruleset didcomm-v2.out-of-band {
     use module io.picolabs.wrangler alias wrangler
     use module io.picolabs.did-o alias dcv2
     provides generate_invitation, connections
-    shares generate_invitation, invite, raw_shortcuts
+    shares generate_invitation, invite, raw_shortcuts, connections
   }
   global {
     connections = function(){
