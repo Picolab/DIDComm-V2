@@ -140,6 +140,25 @@ $(function(){
       ent:shortcuts := {}
     }
   }
+  rule initializeConnectionsStore {
+    select when didcomm_v2_out_of_band factory_reset
+      where ent:connections.isnull()
+    fired {
+      ent:connections := {}
+    }
+  }
+  rule generateAndShowInvitation {
+    select when didcomm_v2_out_of_band invitation_needed
+      label re#(.+)# setting(label)
+    pre {
+      parts = dcv2:generate_invitation(label).split("/invite?")
+      the_invite = invite_url(parts.tail()) // ["_oob=eyJ..."]
+    }
+    send_directive("_redirect",{"url":the_invite})
+    fired {
+      ent:connections{label} := {"label":label}
+    }
+  }
   rule createShortcutIfNeeded {
     select when didcomm_v2_out_of_band shortcut_need_changed
       _oob re#(eyJ.+)#
