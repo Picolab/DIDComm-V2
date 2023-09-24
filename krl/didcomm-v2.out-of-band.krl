@@ -12,7 +12,7 @@ ruleset didcomm-v2.out-of-band {
           _oob = c.get("_oob")
           json = _oob => _oob.math:base64decode().decode() | null
           from = json => json.get("from") | null
-          from => c.put("my_did",from).delete("_oob") | c
+          from => c.put("my_did",from) | c
         })
     }
     raw_shortcuts = function(){
@@ -166,7 +166,8 @@ $(function(){
       json = _oob.math:base64decode().decode()
       the_connection_so_far = {
         "label": label,
-        "my_did": json.get("from")
+        "my_did": json.get("from"),
+        "_oob": _oob,
       }
     }
     send_directive("_redirect",{"url":the_invite})
