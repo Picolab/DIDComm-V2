@@ -123,7 +123,7 @@ $(function(){
     every {
       wrangler:createChannel(
         ["oob","ui"],
-        {"allow":[{"domain":"didcomm_v2_out_of_band","name":"shortcut_need_changed"}],"deny":[]},
+        {"allow":[{"domain":"didcomm_v2_out_of_band","name":"*"}],"deny":[]},
         {"allow":[{"rid":meta:rid,"name":"*"}],"deny":[]}
       )
     }
@@ -156,10 +156,14 @@ $(function(){
     pre {
       parts = dcv2:generate_invitation(label).split("/invite?")
       the_invite = invite_url(parts.tail()) // ["_oob=eyJ..."]
+      the_connection_so_far = {
+        "label": label,
+        "_oob": parts.tail().head().split("=").tail().join("=")
+      }
     }
     send_directive("_redirect",{"url":the_invite})
     fired {
-      ent:connections{label} := {"label":label}
+      ent:connections{label} := the_connection_so_far
     }
   }
   rule createShortcutIfNeeded {
