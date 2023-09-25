@@ -2,19 +2,10 @@ ruleset didcomm-v2.out-of-band {
   meta {
     use module io.picolabs.wrangler alias wrangler
     use module io.picolabs.did-o alias dcv2
-    provides generate_invitation, connections
-    shares generate_invitation, invite, raw_shortcuts, connections
+    provides generate_invitation
+    shares generate_invitation, invite, raw_shortcuts
   }
   global {
-    connections = function(){
-      ent:connections
-        .map(function(c){
-          _oob = c.get("_oob")
-          json = _oob => _oob.math:base64decode().decode() | null
-          from = json => json.get("from") | null
-          from => c.put("my_did",from) | c
-        })
-    }
     raw_shortcuts = function(){
       ent:shortcuts
     }
@@ -149,30 +140,10 @@ $(function(){
       ent:shortcuts := {}
     }
   }
-  rule initializeConnectionsStore {
+  rule removeConnectionsStore {
     select when didcomm_v2_out_of_band factory_reset
-      where ent:connections.isnull()
     fired {
-      ent:connections := {}
-    }
-  }
-  rule generateAndShowInvitation {
-    select when didcomm_v2_out_of_band invitation_needed
-      label re#(.+)# setting(label)
-    pre {
-      parts = dcv2:generate_invitation(label).split("/invite?")
-      the_invite = invite_url(parts.tail()) // ["_oob=eyJ..."]
-      _oob = parts.tail().head().split("=").tail().join("=")
-      json = _oob.math:base64decode().decode()
-      the_connection_so_far = {
-        "label": label,
-        "my_did": json.get("from"),
-        "_oob": _oob,
-      }
-    }
-    send_directive("_redirect",{"url":the_invite})
-    fired {
-      ent:connections{label} := the_connection_so_far
+      clear ent:connections
     }
   }
   rule createShortcutIfNeeded {
