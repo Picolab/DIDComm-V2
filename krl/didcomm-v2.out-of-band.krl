@@ -120,7 +120,7 @@ $(function(){
     every {
       wrangler:createChannel(
         ["oob","ui"],
-        {"allow":[{"domain":"didcomm_v2_out_of_band","name":"*"}],"deny":[]},
+        {"allow":[{"domain":"didcomm_v2_out_of_band","name":"shortcut_need_changed"}],"deny":[]},
         {"allow":[{"rid":meta:rid,"name":"*"}],"deny":[]}
       )
     }
@@ -138,12 +138,6 @@ $(function(){
       where ent:shortcuts.isnull()
     fired {
       ent:shortcuts := {}
-    }
-  }
-  rule removeConnectionsStore {
-    select when didcomm_v2_out_of_band factory_reset
-    fired {
-      clear ent:connections
     }
   }
   rule createShortcutIfNeeded {
