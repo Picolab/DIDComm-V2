@@ -28,9 +28,9 @@ ruleset didcomm-v2.user-profile {
     select when wrangler ruleset_installed where event:attrs{"rids"} >< meta:rid
     pre {
       route0 = dcv2:addRoute("https://didcomm.org/user-profile/1.0/profile",
-                 "didcomm_v2_user-profile", "profile_received")
+                 "didcomm_v2_user_profile", "profile_received")
       route2 = dcv2:addRoute("https://didcomm.org/user-profile/1.0/request-profile",
-                 "didcomm_v2_user-profile", "request_profile_received")
+                 "didcomm_v2_user_profile", "request_profile_received")
     }
     wrangler:createChannel(
       upTags,
