@@ -10,4 +10,5 @@ The [Trust Ping Protocol 2.0](https://didcomm.org/trust-ping/2.0/) is the only b
 The `krl` folder herein contains implementations of additional protocols.
 1. out-of-band, featuring additional support of built-in out of band invitations, including short URLs
 2. basicmessage
+3. user-profile
 
