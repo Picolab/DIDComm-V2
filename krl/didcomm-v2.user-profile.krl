@@ -6,11 +6,12 @@ ruleset didcomm-v2.user-profile {
       https://didcomm.org/user-profile/1.0/
     >>
     use module io.picolabs.wrangler alias wrangler
+    use module io.picolabs.plan.profile alias profile
     use module io.picolabs.did-o alias dcv2
   }
   global {
     upTags = ["didcomm-v2","user-profile"] // meta:rid.split(".")
-    generate_basicmessage = function(their_did,message_text,thid){
+    generate_user_profile = function(their_did,thid){
       dido:generateMessage({
         "type": "https://didcomm.org/user-profile/1.0/profile",
         "from": dcv2:didMap(){their_did},
@@ -18,7 +19,7 @@ ruleset didcomm-v2.user-profile {
         "thid": thid,
         "body": {
           "profile": {
-            "displayName": pds:getName(),
+            "displayName": profile:name(),
           },
         }
       })
@@ -45,5 +46,33 @@ ruleset didcomm-v2.user-profile {
     select when didcomm_v2_user_profile factory_reset
     foreach wrangler:channels(upTags).reverse().tail() setting(chan)
     wrangler:deleteChannel(chan.get("id"))
+  }
+  rule voluntarilySendProfile {
+    select when didcomm_v2_user_profile profile_to_volunteer
+      their_did re#(.+)# setting(their_did)
+    pre {
+      message = generate_user_profile(their_did)
+      a = dcv2:send(their_did,message)
+    }
+  }
+  rule sendBackRequestedProfile {
+    select when didcomm_v2_user_profile request_profile_received
+    pre {
+      message = event:attrs{"message"}
+      their_did = message.get("from")
+      up_message = generate_user_profile(their_did,message{"id"})
+      a = dcv2:send(their_did,up_message)
+    }
+  }
+  rule receiveProfile {
+    select when didcomm_v2_user_profile profile_received
+    pre {
+      message = event:attrs{"message"}
+    }
+    if message{["body","send_back_yours"]} then noop()
+    fired {
+      raise didcomm_v2_user_profile event "request_profile_received"
+        attributes event:attrs
+    }
   }
 }
