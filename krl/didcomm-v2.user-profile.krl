@@ -6,7 +6,6 @@ ruleset didcomm-v2.user-profile {
       https://didcomm.org/user-profile/1.0/
     >>
     use module io.picolabs.wrangler alias wrangler
-    use module io.picolabs.plan.profile alias profile
     use module io.picolabs.did-o alias dcv2
   }
   global {
@@ -18,9 +17,7 @@ ruleset didcomm-v2.user-profile {
         "to": [their_did],
         "thid": thid,
         "body": {
-          "profile": {
-            "displayName": profile:name(),
-          },
+          "profile": ent:profile,
         }
       })
     }
@@ -46,6 +43,19 @@ ruleset didcomm-v2.user-profile {
     select when didcomm_v2_user_profile factory_reset
     foreach wrangler:channels(upTags).reverse().tail() setting(chan)
     wrangler:deleteChannel(chan.get("id"))
+  }
+  rule initializeProfile {
+    select when didcomm_v2_user_profile factory_reset
+      where ent:profile.isnull()
+    fired {
+      ent:profile := {}
+    }
+  }
+  rule setProfileGivenComponents {
+    select when didcomm_v2_user_profile profile_changed
+    fired {
+      ent:profile := {"displayName":event:attrs.get("displayName")}
+    }
   }
   rule voluntarilySendProfile {
     select when didcomm_v2_user_profile profile_to_volunteer
